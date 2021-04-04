@@ -10,6 +10,10 @@ export const Walmart: Store = {
     maxPrice: {
       container: 'span[class*="price-characteristic"]',
     },
+    captcha: {
+      container: '#sign-in-widget > h1',
+      text: [' Verify your identity'],
+    },
   },
   links: [
     {
