@@ -438,17 +438,6 @@ async function lookupCardInStock(store: Store, page: Page, link: Link) {
     }
   }
 
-  if (store.labels.maxPrice) {
-    const maxPrice = config.store.maxPrice.series[link.series];
-
-    link.price = await getPrice(page, store.labels.maxPrice, baseOptions);
-
-    if (link.price && link.price > maxPrice && maxPrice > 0) {
-      logger.info(Print.maxPrice(link, store, maxPrice, true));
-      return false;
-    }
-  }
-
   if (link.labels?.inStock) {
     const options = {
       ...baseOptions,
@@ -471,6 +460,18 @@ async function lookupCardInStock(store: Store, page: Page, link: Link) {
 
     if (!(await pageIncludesLabels(page, store.labels.inStock, options))) {
       logger.info(Print.outOfStock(link, store, true));
+      return false;
+    }
+  }
+
+
+  if (store.labels.maxPrice) {
+    const maxPrice = config.store.maxPrice.series[link.series];
+
+    link.price = await getPrice(page, store.labels.maxPrice, baseOptions);
+
+    if (link.price && link.price > maxPrice && maxPrice > 0) {
+      logger.info(Print.maxPrice(link, store, maxPrice, true));
       return false;
     }
   }
