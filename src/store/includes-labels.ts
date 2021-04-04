@@ -5,7 +5,7 @@ import {logger} from '../logger';
 export type Selector = {
   requireVisible: boolean;
   selector: string;
-  type: 'innerHTML' | 'outerHTML' | 'textContent';
+  type: 'innerHTML' | 'outerHTML' | 'textContent' | 'HTMLImageElement';
 };
 
 function isElementArray(query: LabelQuery): query is Element[] {
@@ -22,14 +22,17 @@ function getQueryAsElementArray(
     return query.map(x => ({
       container: x.container ?? defaultContainer,
       text: x.text,
+      type: x.type ?? ''
     }));
   }
 
   if (Array.isArray(query)) {
+    // TODO: Figure out what to do with the type in this case.
     return [
       {
         container: defaultContainer,
         text: query,
+        type: '',
       },
     ];
   }
@@ -38,6 +41,7 @@ function getQueryAsElementArray(
     {
       container: query.container ?? defaultContainer,
       text: query.text,
+      type: query.type ?? '',
     },
   ];
 }
@@ -48,12 +52,14 @@ export async function pageIncludesLabels(
   options: Selector
 ) {
   const elementQueries = getQueryAsElementArray(query, options.selector);
-
   const resolved = await Promise.all(
     elementQueries.map(async query => {
-      const selector = {...options, selector: query.container};
+      let selector = {...options, selector: query.container};
+      // TODO: Validate user type.
+      if (options.type) {
+        selector.type = query.type as any;
+      }
       const contents = (await extractPageContents(page, selector)) ?? '';
-
       if (!contents) {
         return false;
       }
@@ -72,7 +78,7 @@ export async function extractPageContents(
   selector: Selector
 ): Promise<string | null> {
   return page.evaluate((options: Selector) => {
-    const element: globalThis.HTMLElement | null = document.querySelector(
+    const element: globalThis.HTMLElement | globalThis.HTMLImageElement | null = document.querySelector(
       options.selector
     );
 
@@ -94,6 +100,11 @@ export async function extractPageContents(
         return element.outerHTML;
       case 'textContent':
         return element.textContent;
+      case 'textContent':
+        return element.textContent;
+      case 'HTMLImageElement':
+        const imageElement = element as HTMLImageElement;
+        return imageElement.alt;
       default:
         return 'Error: selector.type is unknown';
     }

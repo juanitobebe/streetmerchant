@@ -3,6 +3,7 @@ import {Browser, PuppeteerLifeCycleEvent} from 'puppeteer';
 export type Element = {
   container?: string;
   text: string[];
+  type?: string;
 };
 
 export type Pricing = {

@@ -146,6 +146,7 @@ import {Wipoid} from './wipoid';
 import {Xbox} from './xbox';
 import {Zotac} from './zotac';
 import {logger} from '../../logger';
+import { Costco } from './costco';
 
 export const storeList = new Map([
   [AComPC.name, AComPC],
@@ -197,6 +198,7 @@ export const storeList = new Map([
   [Coolmod.name, Coolmod],
   [Corsair.name, Corsair],
   [CorsairUK.name, CorsairUK],
+  [Costco.name, Costco],
   [Cpl.name, Cpl],
   [Currys.name, Currys],
   [Cyberport.name, Cyberport],
